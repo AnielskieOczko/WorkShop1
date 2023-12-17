@@ -13,9 +13,9 @@ public class TaskManager {
 
     public static void main(String[] args) throws FileNotFoundException {
         readFromFile("./src/main/resources/tasks.csv");
-        System.out.println(getUserInput("Podaj nazwe zadania"));
+        System.out.println(getUserInput("Podaj priorytet zadania"));
     }
-    
+
     public static void readFromFile(String path) throws FileNotFoundException {
         Path source = Paths.get(path);
 
