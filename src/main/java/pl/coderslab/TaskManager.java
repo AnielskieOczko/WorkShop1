@@ -1,28 +1,40 @@
 package pl.coderslab;
 //import pl.coderslab.ConsoleColors;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Scanner;
 
 
 public class TaskManager {
 
     public static void main(String[] args) throws IOException {
-        int lineCount = getNumberOfLinesInFile("./src/main/resources/tasks.csv");
+        String source = "./src/main/resources/tasks.csv";
+        Scanner scanner = new Scanner(System.in);
+        int lineCount = getNumberOfLinesInFile(source);
         System.out.println(lineCount);
         String[][] taskList = readFromFile("./src/main/resources/tasks.csv", lineCount, 3);
 
         boolean exitCondition = true;
         while (exitCondition) {
             displayOptions();
-            String userInput = getUserInput("");
+            String selectedOption = getUserInput("");
 
-            switch (userInput) {
+            switch (selectedOption) {
                 case "add":
                     // add new task;
+                    String[] newTask = {"", "", ""};
+                    newTask[0] = getUserInput("Please provide task description:");
+                    newTask[1] = getUserInput("Please provide task due date (yyyy-mm-dd)");
+                    newTask[2] = getUserInput("Is task important options: true/false");
+
+                    taskList = addTask(taskList, newTask);
                     System.out.println("New task added");
                     break;
                 case "list":
@@ -30,11 +42,15 @@ public class TaskManager {
                     displayTasks(taskList);
                     break;
                 case "remove":
-                    System.out.println("Task removed");
+                    int taskIndex = Integer.parseInt(getNumberOfTaskToDelete(taskList, scanner));
+                    taskList = ArrayUtils.remove(taskList, taskIndex);
+                    System.out.printf("Task with index %d removed%n", taskIndex);
                     break;
                 case "exit":
-                    System.out.println("Program closed");
+                    writeToFile(source, taskList);
+                    System.out.println("Work saved: " + source);
                     exitCondition = false;
+                    System.out.println("Program closed");
                     break;
                 default:
                     System.out.println("Please select a correct option");
@@ -42,11 +58,45 @@ public class TaskManager {
         }
     }
 
+    private static String getNumberOfTaskToDelete(String[][] taskList, Scanner scanner) {
+
+        int maxTaskIndex = taskList.length - 1;
+//        Scanner scanner = new Scanner(System.in);
+        String taskNumber = null;
+
+        System.out.printf("Please provide task number between %d and %d%n", 0, maxTaskIndex);
+
+        while(scanner.hasNextLine()){
+            String line = scanner.nextLine();
+            if (NumberUtils.isParsable(line)) {
+                if (Integer.parseInt(line) <= maxTaskIndex) {
+                    return line;
+                } else {
+                    System.out.printf("Provided task index out of range. Please provide task number between %d and %d%n", 0, maxTaskIndex);
+                }
+            } else {
+                System.out.printf("Please provide task number between %d and %d%n", 0, maxTaskIndex);
+            }
+        }
+        return null;
+    }
+
+    public static String[][] addTask(String[][] taskList, String[] newTaskDetails) {
+
+        taskList = Arrays.copyOf(taskList, taskList.length + 1);
+
+        taskList[taskList.length - 1] = new String[3];
+        taskList[taskList.length - 1][0] = newTaskDetails[0];
+        taskList[taskList.length - 1][1] = newTaskDetails[1];
+        taskList[taskList.length - 1][2] = newTaskDetails[2];
+
+        return taskList;
+    }
     public static void displayOptions(){
         String[] options = {"add", "remove", "list", "exit"};
         System.out.println(ConsoleColors.BLUE + "Please select an option:");
-        for (int i = 0; i < options.length; i++) {
-            System.out.println(ConsoleColors.RESET + options[i]);
+        for (String option : options) {
+            System.out.println(ConsoleColors.RESET + option);
         }
     }
 
@@ -54,7 +104,7 @@ public class TaskManager {
 
         StringBuilder task = new StringBuilder();
         int maxCharCount = 0;
-        int defaultPadding = 10;
+        int defaultPadding = 1;
 
         for (int r = 0; r < taskList.length; r++) {
             task.append(r).append(" : ");
@@ -109,9 +159,14 @@ public class TaskManager {
     }
 
 
-    public static void writeToFile(String path, String task) {
-        try(FileWriter writer = new FileWriter(path, true)) {
-            writer.append(task).append("\n");
+    public static void writeToFile(String path, String[][] taskList) {
+
+        StringBuilder s = new StringBuilder();
+        try(FileWriter writer = new FileWriter(path)) {
+            for (int r = 0; r < taskList.length; r++) {
+                s.append(String.join(", ", taskList[r])).append("\n");
+            }
+            writer.append(s);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
