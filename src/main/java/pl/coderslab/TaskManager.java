@@ -1,10 +1,7 @@
 package pl.coderslab;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import java.io.*;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Scanner;
 
 import static pl.coderslab.ProgramOptions.*;
@@ -17,13 +14,14 @@ public class TaskManager {
     public static void main(String[] args) throws IOException {
         String source = "./src/main/resources/tasks.csv";
         Scanner scanner = new Scanner(System.in);
-        int[] fileContentStats = getFileCountentStats(source);
+        int[] fileContentStats = getFileContentStats(source);
         int lineCount = fileContentStats[0];
-        int maxLineCharCount = fileContentStats[0];
+        int maxDescriptionLineCharCount = fileContentStats[1];
+
         String[][] taskList = readFromFile("./src/main/resources/tasks.csv", lineCount, 3);
         taskManagerSystemMessage("Number of tasks in source file: " + lineCount);
         displayOptions();
-        //getMaxNumberOfLineChars("./src/main/resources/tasks.csv");
+
 
         boolean exitCondition = true;
         while (exitCondition) {
@@ -43,7 +41,7 @@ public class TaskManager {
                     break;
                 case "list":
                     taskManagerSystemMessage("List of tasks:");
-                    displayTasks2(taskList, maxLineCharCount);
+                    displayTasks(taskList, maxDescriptionLineCharCount);
                     break;
                 case "remove":
                     String taskIndex = getNumberOfTaskToDelete(taskList, scanner);

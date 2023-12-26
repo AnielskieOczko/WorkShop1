@@ -24,23 +24,25 @@ public class ReadWriteFile {
         return tasks;
     }
 
-    public static int[] getFileCountentStats(String path) throws IOException {
+    public static int[] getFileContentStats(String path) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(path));
         int lines = 0;
-        int maxLineCharCount = 0;
+        int maxDescriptionLineCharCount = 0;
         String line;
 
         while ((line = reader.readLine()) != null) {
 
-            if (maxLineCharCount < line.length()) {
-                maxLineCharCount = line.length();
+            String[] lineSplit = line.split(",");
+
+            if (maxDescriptionLineCharCount < lineSplit[0].length()) {
+                maxDescriptionLineCharCount = lineSplit[0].length();
             }
-            System.out.println(line.length());
+
             lines++;
         }
 
         reader.close();
-        return new int[]{lines, maxLineCharCount};
+        return new int[]{lines, maxDescriptionLineCharCount};
     }
 
 

@@ -27,10 +27,16 @@ public class ProgramOptions {
         }
     }
 
-    public static void displayTasks2(String[][] taskList, int maxLineCharCount) {
+    public static void displayTasks(String[][] taskList, int maxDescriptionLineCharCount) {
+
+        for (String[] strings : taskList) {
+            if (strings[0].length() > maxDescriptionLineCharCount) {
+                maxDescriptionLineCharCount = strings[0].length();
+            }
+        }
 
         StringBuilder task = new StringBuilder();
-        int maxCharCount = maxLineCharCount;
+
         int defaultPadding = 10;
         int descriptionPadding = 10;
 
@@ -41,54 +47,17 @@ public class ProgramOptions {
                 if (c == 0) {
                     int charCount = taskList[r][c].length();
 
-
-                    if (charCount > maxCharCount) {
-                        maxCharCount = charCount;
-                        System.out.println("max " + maxCharCount);
-                        System.out.println("string count: " + charCount);
+                    if (charCount > maxDescriptionLineCharCount) {
+                        maxDescriptionLineCharCount = charCount;
                     }
-                    if (defaultPadding < maxCharCount) {
-                        descriptionPadding = descriptionPadding + (maxCharCount - descriptionPadding);
-                        System.out.println("defaultPadding " + charCount);
+                    if (defaultPadding < maxDescriptionLineCharCount) {
+                        descriptionPadding = descriptionPadding + (maxDescriptionLineCharCount - descriptionPadding);
                     }
-                    String line = StringUtils.rightPad(taskList[r][c],descriptionPadding,' ');
-                    task.append(line).append(" ");
+                    String line = StringUtils.rightPad(taskList[r][c].trim(),descriptionPadding,' ');
+                    task.append(line).append("  ");
                 } else {
-                    String line = StringUtils.rightPad(taskList[r][c],defaultPadding,' ');
-                    task.append(line).append(" ");
-                }
-            }
-            task.append("\n");
-        }
-        System.out.println(task);
-    }
-    public static void displayTasks(String[][] taskList) {
-
-        StringBuilder task = new StringBuilder();
-        int maxCharCount = 0;
-        int defaultPadding = 0;
-
-        for (int r = 0; r < taskList.length; r++) {
-            task.append(r).append(" : ");
-            for (int c = 0; c < taskList[r].length; c++ ) {
-
-                if (c == 0) {
-                    int charCount = taskList[r][c].length();
-
-                    System.out.println("max " + maxCharCount);
-                    System.out.println("string count: " + charCount);
-                    if (charCount > maxCharCount) {
-                        maxCharCount = charCount;
-                    }
-                    if (defaultPadding < maxCharCount) {
-                        defaultPadding = defaultPadding + (maxCharCount - defaultPadding);
-                        System.out.println("defaultPadding " + charCount);
-                    }
-                    String line = StringUtils.rightPad(taskList[r][c],defaultPadding,' ');
-                    task.append(line).append(" ");
-                } else {
-                    String line = StringUtils.rightPad(taskList[r][c],10,' ');
-                    task.append(line).append(" ");
+                    String line = StringUtils.rightPad(taskList[r][c].trim(),defaultPadding,' ');
+                    task.append(line).append("  ");
                 }
             }
             task.append("\n");
